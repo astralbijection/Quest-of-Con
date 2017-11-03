@@ -2,6 +2,7 @@ package io.github.plenglin.questofcon.game.grid
 
 import com.badlogic.gdx.math.Vector2
 import io.github.plenglin.questofcon.linMap
+import ktx.math.times
 import java.util.*
 
 
@@ -24,7 +25,6 @@ class DiamondSquareHeightGenerator(scale: Int, val initialOffsets: Double = 0.5,
 
         for (i in 1..iterations) {
             val hlen = side shr i
-            println("i: $hlen")
 
             val affected = getSquaresAffected(i)
             val diamonds = getDiamonds(i)
@@ -69,7 +69,6 @@ class DiamondSquareHeightGenerator(scale: Int, val initialOffsets: Double = 0.5,
                 Pair(i, j)
             }
         }.flatten().toSet()
-        //println("$iteration: $start..$side step $jump; $accumulated")
         return if (total || iteration == 1) {
             accumulated
         } else {
@@ -103,15 +102,36 @@ class HeightMap(val grid: Array<Array<Double>>) {
 
     constructor(grid: Collection<Collection<Double>>): this(grid.map { it.toTypedArray() }.toTypedArray())
 
+    constructor(width: Int, fill: Double = 0.0): this(Array(width, { Array(width, { fill }) }))
+
     val width = grid.size
 
     val normalized get(): HeightMap {
         val max = grid.flatten().max()!!
         val min = grid.flatten().min()!!
-        println("max: $max, min: $min")
+        //println("max: $max, min: $min")
         return HeightMap(grid.map { col ->
             col.map { linMap(it, min, max, 0.0, 1.0) }.toTypedArray()
         }.toTypedArray())
+    }
+
+    operator fun plus(other: HeightMap): HeightMap {
+        val newWidth = maxOf(this.width, other.width)
+        return HeightMap((0 until newWidth).map { i ->
+            (0 until newWidth).map { j ->
+                val x = i.toDouble() / newWidth
+                val y = j.toDouble() / newWidth
+                this[x, y] + other[x, y]
+            }
+        })
+    }
+
+    operator fun plus(other: Double): HeightMap {
+        return HeightMap((0 until width).map { i ->
+            (0 until width).map { j ->
+                this[i][j] + other
+            }
+        })
     }
 
     operator fun times(other: Double): HeightMap {
@@ -123,9 +143,12 @@ class HeightMap(val grid: Array<Array<Double>>) {
     }
 
     operator fun times(other: HeightMap): HeightMap {
-        return HeightMap((0 until width).map { i ->
-            (0 until width).map { j ->
-                this[i][j] * other[i][j]
+        val newWidth = maxOf(this.width, other.width)
+        return HeightMap((0 until newWidth).map { i ->
+            (0 until newWidth).map { j ->
+                val x = i.toDouble() / newWidth
+                val y = j.toDouble() / newWidth
+                this[x, y] * other[x, y]
             }
         })
     }
@@ -162,7 +185,7 @@ class HeightMap(val grid: Array<Array<Double>>) {
     fun partialI(): HeightMap {
         return HeightMap((0 until width).map { i ->
             (0 until width).map { j ->
-                (grid[i + 1][j] - grid[i - 1][j]) / width / 2
+                (grid.getOrElse(i + 1, { grid[i] })[j] - grid.getOrElse(i - 1, { grid[i] })[j]) / width / 2
             }
         })
     }
@@ -173,7 +196,7 @@ class HeightMap(val grid: Array<Array<Double>>) {
     fun partialJ(): HeightMap {
         return HeightMap((0 until width).map { i ->
             (0 until width).map { j ->
-                (grid[i][j + 1] - grid[i][j - 1]) / width / 2
+                (grid[i].getOrElse(j + 1, { grid[i][j] }) - grid[i].getOrElse(j - 1, { grid[i][j] })) / width / 2
             }
         })
     }
@@ -186,6 +209,14 @@ class HeightMap(val grid: Array<Array<Double>>) {
                 Vector2(di[i][j].toFloat(), dj[i][j].toFloat())
             }.toTypedArray()
         }.toTypedArray()
+    }
+
+    override fun toString(): String {
+        return grid.map { col ->
+            col.map {
+                "%.2f\t".format(it)
+            }.reduceRight({ a, b -> "$a$b"})
+        }.reduceRight({ a, b -> "$a\n$b"})
     }
 
 }
@@ -205,36 +236,89 @@ class MapToHeight(val world: World, val grid: HeightMap) {
                 h > 0.85 -> Terrains.mountains
                 h > 0.65 -> Terrains.hills
                 h > 0.25 -> Terrains.grass
-                h > 0.15 -> Terrains.lowlands
-                //h > 0.15 -> Terrains.desert
-                else -> Terrains.water
+                else -> Terrains.lowlands
             }
         }
     }
 }
 
 /**
- * Populate the world with vegetation. Assumes that lower areas get more water.
+ * Populate the world with vegetation.
  */
-class VegetationGenerator(val world: World, val height: HeightMap, val rainfall: HeightMap, val iterations: Int = 5) {
+class VegetationGenerator(val world: World, val height: HeightMap,
+                          val drainIterations: Int = 7, val simulationIterations: Int = 3,
+                          val drainRetention: Double = 0.9, val waterPropagation: Double = 500.0,
+                          val propagationDistance: Double = 0.01, seed: Long = 0) {
+
+    val random = Random(seed)
 
     fun generate() {
+        val slopeField = (height).slopeField()
 
+        println("slopefield")
+        slopeField.forEachIndexed { i, col ->
+            col.forEachIndexed { j, v ->
+                val d = v * 1000f
+                print("<${d.x.toInt() * 1000}\t${d.y.toInt() * 1000}>\t")
+            }
+            println()
+        }
+
+        var totalWater = HeightMap(17)
+        for (iter in (1..simulationIterations)) {
+
+            println("simulation iteration #$iter")
+
+            val invertedHeight = (height * -1.0 + 1.0)
+            val rainfall = HeightMap(DiamondSquareHeightGenerator(3, seed = random.nextLong()).generate().grid).normalized  // We get this much base rainfall
+            var water = (rainfall * invertedHeight).normalized  // Higher regions get less rainfall
+
+            println("rainfall this month: \n$rainfall")
+            println("invHeight:\n $invertedHeight")
+            println("water:\n $water")
+            for (jter in (1..drainIterations)) {
+
+                println("drain iteration #$jter")
+                val oldWater = water
+                water *= drainRetention
+                (1 until water.width - 1).map { i ->
+                    (1 until water.width - 1).map { j ->
+                        val x = i / water.width.toDouble()
+                        val y = j / water.width.toDouble()
+
+                        // Where to push water?
+                        val slope = slopeField[i][j]
+                        val dx = -slope.x.toDouble()
+                        val dy = -slope.y.toDouble()
+                        val amt = slope.len()
+
+                        val col = water[i]
+                        //col[j] -= amt
+
+                        if (dx > 0) {
+                            water[i + 1][j] += waterPropagation * amt
+                        }
+                    }
+                }
+                water = water.normalized
+                println(water)
+            }
+
+            println()
+            totalWater += water.normalized
+            println(totalWater.normalized)
+            println("=====")
+        }
     }
 
 }
 
 fun main(args: Array<String>) {
-    println("hello wurd")
-    val g = DiamondSquareHeightGenerator(3, seed = 0)
-    //println(g.getDiamonds(0))
-    g.generate()
-    val data = HeightMap(g.grid).normalized
-    data.grid.forEach { col ->
-        col.forEach {
-            print("%.2f\t".format(it))
-        }
-        println()
-    }
-    println(data[0.0, 0.0])
+    val height = HeightMap(DiamondSquareHeightGenerator(3, seed = 0).generate().grid).normalized
+    val world = World(32, 32)
+    println("height:\n$height")
+    MapToHeight(world, height).doHeightMap()
+    VegetationGenerator(world, height).generate()
+    println("height:\n$height")
+
 }
