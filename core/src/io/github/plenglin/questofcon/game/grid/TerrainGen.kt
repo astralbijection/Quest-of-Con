@@ -246,9 +246,9 @@ class MapToHeight(val world: World, val grid: HeightMap) {
  * Populate the world with vegetation.
  */
 class VegetationGenerator(val world: World, val height: HeightMap,
-                          val drainIterations: Int = 7, val simulationIterations: Int = 3,
+                          val drainIterations: Int = 16, val simulationIterations: Int = 3,
                           val drainRetention: Double = 0.9, val waterPropagation: Double = 500.0,
-                          val propagationDistance: Double = 0.01, seed: Long = 0) {
+                          seed: Long = 0) {
 
     val random = Random(seed)
 
@@ -281,30 +281,40 @@ class VegetationGenerator(val world: World, val height: HeightMap,
                 println("drain iteration #$jter")
                 val oldWater = water
                 water *= drainRetention
-                (1 until water.width - 1).map { i ->
-                    (1 until water.width - 1).map { j ->
+                (0 until water.width).map { i ->
+                    (0 until water.width).map { j ->
                         val x = i / water.width.toDouble()
                         val y = j / water.width.toDouble()
 
                         // Where to push water?
-                        val slope = slopeField[i][j]
+                        val slope = slopeField[i][j].cpy() * waterPropagation.toFloat()
                         val dx = -slope.x.toDouble()
                         val dy = -slope.y.toDouble()
-                        val amt = slope.len()
+                        val amt = slope.len2().toDouble()
 
-                        val col = water[i]
-                        //col[j] -= amt
+                        water[i][j] -= amt
 
-                        if (dx > 0) {
-                            water[i + 1][j] += waterPropagation * amt
-                        }
+                        // Push water to its rightful destination
+                        try {
+                            if (dx > 0) {
+                                water[i + 1][j] += dx
+                            } else {
+                                water[i - 1][j] += dx
+                            }
+                        } catch (e: ArrayIndexOutOfBoundsException) {}
+
+                        try {
+                            if (dy > 0) {
+                                water[i][j + 1] += dy
+                            } else {
+                                water[i][j - 1] += dy
+                            }
+                        } catch (e: ArrayIndexOutOfBoundsException) {}
                     }
                 }
-                water = water.normalized
                 println(water)
             }
 
-            println()
             totalWater += water.normalized
             println(totalWater.normalized)
             println("=====")
