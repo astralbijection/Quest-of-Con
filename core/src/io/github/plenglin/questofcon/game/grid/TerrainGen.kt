@@ -1,5 +1,6 @@
 package io.github.plenglin.questofcon.game.grid
 
+import com.badlogic.gdx.math.Vector2
 import io.github.plenglin.questofcon.linMap
 import java.util.*
 
@@ -113,6 +114,14 @@ class HeightMap(val grid: Array<Array<Double>>) {
         }.toTypedArray())
     }
 
+    operator fun times(other: Double): HeightMap {
+        return HeightMap((0 until width).map { i ->
+            (0 until width).map { j ->
+                this[i][j] * other
+            }
+        })
+    }
+
     operator fun times(other: HeightMap): HeightMap {
         return HeightMap((0 until width).map { i ->
             (0 until width).map { j ->
@@ -147,6 +156,38 @@ class HeightMap(val grid: Array<Array<Double>>) {
         return linMap(j, j1.toDouble(), j2.toDouble(), s1, s2)
     }
 
+    /**
+     * The approximate partial derivative w/ respect to i
+     */
+    fun partialI(): HeightMap {
+        return HeightMap((0 until width).map { i ->
+            (0 until width).map { j ->
+                (grid[i + 1][j] - grid[i - 1][j]) / width / 2
+            }
+        })
+    }
+
+    /**
+     * The approximate partial derivative w/ respect to j
+     */
+    fun partialJ(): HeightMap {
+        return HeightMap((0 until width).map { i ->
+            (0 until width).map { j ->
+                (grid[i][j + 1] - grid[i][j - 1]) / width / 2
+            }
+        })
+    }
+
+    fun slopeField(): Array<Array<Vector2>> {
+        val di = this.partialJ().partialI()
+        val dj = this.partialI().partialJ()
+        return (0 until width).map { i ->
+            (0 until width).map { j ->
+                Vector2(di[i][j].toFloat(), dj[i][j].toFloat())
+            }.toTypedArray()
+        }.toTypedArray()
+    }
+
 }
 
 /**
@@ -175,7 +216,11 @@ class MapToHeight(val world: World, val grid: HeightMap) {
 /**
  * Populate the world with vegetation. Assumes that lower areas get more water.
  */
-class VegetationGenerator(val world: World, val height: HeightMap, val rainfall: HeightMap) {
+class VegetationGenerator(val world: World, val height: HeightMap, val rainfall: HeightMap, val iterations: Int = 5) {
+
+    fun generate() {
+
+    }
 
 }
 
