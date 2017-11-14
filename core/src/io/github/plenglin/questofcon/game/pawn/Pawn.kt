@@ -51,42 +51,36 @@ class Pawn(val type: PawnType, var team: Team, _pos: WorldCoords, var level: Int
     }
 
     fun getMovableSquares(): Map<WorldCoords, Int> {
-        // Dijkstra
+        // Breadth-First
         val dist = mutableMapOf<WorldCoords, Int>(pos to 0)  // coord, cost
-        val unvisited = pos.surrounding().filter { it.tile!!.passableBy(this) }.toMutableList()
-        unvisited.forEach {
-            dist[it] = it.tile!!.biome.movementCost + maxOf(it.tile.elevation - pos.tile!!.elevation, 1)
-        }
+        val unvisited = mutableListOf(pos)
 
         while (unvisited.isNotEmpty()) {
             val coord = unvisited.removeAt(0)  // Pop this new coordinate
             val tile = coord.tile!!
-            val terrain = tile.biome
-            val cost = terrain.movementCost
-            //println("$terrain, ${cost}, ${tile.passableBy(team)}")
-            val fullDist = dist[coord]!!
 
-            if (tile.passableBy(this) && fullDist + cost <= ap) {  // Can we even get past this tile?
-                coord.surrounding().forEach { neighbor ->  // For each neighbor...
-                    val totalCost = fullDist + cost + maxOf(neighbor.tile!!.elevation - tile.elevation, 1)
+            val coordDist = dist[coord]!!
+
+            if (tile.passableBy(this) && ap - coordDist > 0) {  // Can we even get past this tile? Do we have the AP to leave it?
+                coord.surrounding().forEach { neighbor ->  // If we can, then calculate distances to neighbors
                     val neighborDist = dist[neighbor]
-                    val passable = neighbor.tile.passableBy(this)
-                    //println("neigh: ${neighbor.tile.biome}, ${tile.building}, ${tile.passableBy(team)}")
-                    if (passable) {
+                    val neighborElevationCost = if (neighbor.tile!!.biome.aquatic) 0 else maxOf(neighbor.tile.elevation - tile.elevation, 0)
+                    val neighborBiomeCost = neighbor.tile.biome.movementCost
+                    val newCost = coordDist + neighborBiomeCost + neighborElevationCost
+                    if (neighbor.tile.passableBy(this)) {
                         if (neighborDist == null) {  // If we haven't added the neighbor, add it now
                             unvisited.add(neighbor)
-                            dist[neighbor] = fullDist + cost
-                        } else if (neighborDist > totalCost) {  // Is going through coord to neighbor faster than before?
-                            dist[neighbor] = fullDist + cost  // Put it in
+                            dist[neighbor] = newCost
+                        } else if (neighborDist > newCost) {  // Is going through coord to neighbor faster than before?
+                            dist[neighbor] = newCost  // Put it in
                         }
                     }
                 }
             }
+
         }
 
-        //val keyset = dist.keys.subtract()
-
-        return dist.filter { true }
+        return dist
     }
 
     fun getAttackableSquares(): Set<WorldCoords> {
