@@ -13,7 +13,7 @@ object Constants {
 
     val selectionColor = Color(1f, 1f, 1f, 0.5f)
     val hoveringColor = Color(1f, 1f, 1f, 0.75f)
-    val movementColor: Color = Color(0f, 0f, 1f, 0.25f)
+    val movementColor: Color = Color(0f, 1f, 1f, 0.5f)
     val attackColor: Color = Color(1f, 0f, 0f, 0.5f)
 
     val STARTING_MONEY: Int = 500
