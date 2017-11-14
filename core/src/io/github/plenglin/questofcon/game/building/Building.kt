@@ -75,7 +75,7 @@ class Building(val type: BuildingType, var team: Team, var pos: WorldCoords) {
     }
 
     val buildable get(): List<PawnType> = type.buildable(team)
-    val texture get() = type.texture()
+    val texture get() = type.texture(pos)
     val displayName = type.displayName
 
 }

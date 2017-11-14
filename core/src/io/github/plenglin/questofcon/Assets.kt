@@ -22,10 +22,12 @@ object Assets {
     val scout = AssetDescriptor<Texture>("sprites/pawn/scout.png", Texture::class.java)
     val tankdestroyer = AssetDescriptor<Texture>("sprites/pawn/tankdestr.png", Texture::class.java)
     val beammech = AssetDescriptor<Texture>("sprites/pawn/beammech.png", Texture::class.java)
+    val destroyer = AssetDescriptor<Texture>("sprites/pawn/destroyer.png", Texture::class.java)
 
     val headquarters = AssetDescriptor<Texture>("sprites/building/headquarters.png", Texture::class.java)
     val factory = AssetDescriptor<Texture>("sprites/building/factory.png", Texture::class.java)
     val mine = AssetDescriptor<Texture>("sprites/building/mine.png", Texture::class.java)
+    val drydocks = AssetDescriptor<Texture>("sprites/building/drydocks.png", Texture::class.java)
 
     val bighill = AssetDescriptor<Texture>("sprites/terrain/bighill-bg.png", Texture::class.java)
     val grass = AssetDescriptor<Texture>("sprites/terrain/grass-bg.png", Texture::class.java)
@@ -52,6 +54,7 @@ object Assets {
         manager.load(headquarters)
         manager.load(factory)
         manager.load(mine)
+        manager.load(drydocks)
 
         manager.load(bighill)
         manager.load(grass)

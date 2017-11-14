@@ -88,6 +88,19 @@ object GameData {
         texture = { Assets[Assets.artillery] }
     }
 
+    val destroyer = PawnType("ship-destroyer").apply {
+        displayName = "destroyer"
+        cost = 300
+        baseAtk = 10
+        baseHp = 50
+        maxAp = 5
+        maxRange = 3
+        aquatic = true
+        terrestrial = false
+        type = PawnClass.SHIP
+        texture = { Assets[Assets.destroyer] }
+    }
+
     val hq = BuildingType("bldg-hq").apply {
         displayName = "headquarters"
         maxHp = 1000
@@ -101,9 +114,9 @@ object GameData {
         maxHp = 100
         cost = 150
         upkeep = 0
-        powerConsumption = 10
+        powerConsumption = 20
         texture = { Assets[Assets.factory] }
-        buildable = { pawns.toList() }
+        buildable = { pawns.toList().filter { it.terrestrial } }
     }
 
     val mine = BuildingType("bldg-mine").apply {
@@ -113,6 +126,26 @@ object GameData {
         upkeep = -30
         powerConsumption = 10
         texture = { Assets[Assets.mine] }
+    }
+
+    val drydocks = BuildingType("bldg-drydocks").apply {
+        displayName = "drydocks"
+        maxHp = 200
+        cost = 300
+        upkeep = 0
+        powerConsumption = 30
+        aquatic = true
+        terrestrial = false
+        texture = {
+            /*var orientation = 0
+            it.surrounding().forEach { surr ->
+                if (surr.tile!!.biome.aquatic) {
+                    orientation += 90
+                }
+            }*/
+            Assets[Assets.drydocks]
+        }
+        buildable = { pawns.toList().filter { it.aquatic } }
     }
 
     val beach       = Biome("biome-beach", "beach", true, false, { Assets[Assets.sand] })
@@ -131,10 +164,12 @@ object GameData {
         pawns.register(defender)
         pawns.register(scout)
         pawns.register(artillery)
+        pawns.register(destroyer)
 
         buildings.register(hq)
         buildings.register(factory)
         buildings.register(mine)
+        buildings.register(drydocks)
 
         biomes.register(beach)
         biomes.register(desert)

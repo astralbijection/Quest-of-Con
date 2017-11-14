@@ -31,6 +31,6 @@ class BuildingType(_name: String) : Registerable, BuildableType<Building> {
 
     var buildable: (Team) -> List<PawnType> = { emptyList() }
 
-    var texture: () -> Texture = Assets.missingno
+    var texture: (WorldCoords) -> Texture = { Assets.missingno() }
 
 }
