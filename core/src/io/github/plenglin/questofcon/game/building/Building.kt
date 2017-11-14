@@ -37,8 +37,6 @@ class Building(val type: BuildingType, var team: Team, var pos: WorldCoords) {
         return this
     }
 
-    fun getMoneyPerTurn() = 0
-
     fun onTurnBegin() = Unit
 
     fun onTurnEnd() = Unit
@@ -63,9 +61,11 @@ class Building(val type: BuildingType, var team: Team, var pos: WorldCoords) {
 
     fun getProperties(): Map<String, Any> {
         val map = mutableMapOf("type" to type.displayName, "hp" to "$health/${type.maxHp}", "team" to team.name)
-        val money = getMoneyPerTurn()
-        if (money > 0) {
-            map.put("Income", "$$money")
+        val money = type.upkeep
+        if (money < 0) {
+            map.put("Income", "$${-money}")
+        } else if (money > 0) {
+            map.put("Upkeep", "$${money}")
         }
         return map
     }

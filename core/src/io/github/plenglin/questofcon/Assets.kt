@@ -47,6 +47,7 @@ object Assets {
         manager.load(scout)
         manager.load(tankdestroyer)
         manager.load(beammech)
+        manager.load(destroyer)
 
         manager.load(missing)
         manager.load(q)

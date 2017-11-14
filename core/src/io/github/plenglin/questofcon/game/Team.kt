@@ -29,7 +29,7 @@ class Team(val name: String, val color: Color, _id: Long = -1) {
 
     fun getOwnedTiles(): List<WorldCoords> = world.filter { it.tile!!.getTeam() == this }.toList()
 
-    fun getMoneyPerTurn(): Int = getOwnedTiles().sumBy { it.tile!!.building?.getMoneyPerTurn() ?: 0 }
+    fun getMoneyPerTurn(): Int = -getOwnedTiles().sumBy { it.tile!!.building?.type?.upkeep ?: 0 }
 
     fun startTurn() {
         money += getMoneyPerTurn()
