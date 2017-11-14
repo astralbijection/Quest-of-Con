@@ -119,7 +119,7 @@ object GameData {
     val desert      = Biome("biome-desert", "desert", true, false, { Assets[Assets.sand] })
     val grass       = Biome("biome-grassland", "grassland", true, true, { Assets[Assets.grass] })
     val highlands   = Biome("biome-highlands", "highlands", true, false, { Assets[Assets.bighill] }, movementCost = 2)
-    val water       = Biome("biome-water", "water", false, false, { Assets[Assets.water] })
+    val water       = Biome("biome-water", "water", true, true, { Assets[Assets.water] }, movementCost = 1, aquatic = true)
     val mountains   = Biome("biome-mountains", "mountains", false, false, { Assets[Assets.mountain] })
     val flattened   = Biome("biome-flattened", "flattened", true, true, { Assets[Assets.smallhill] })
 

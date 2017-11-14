@@ -6,4 +6,6 @@ interface BuildableType<Output> {
 
     fun buildAt(coords: WorldCoords, team: Team): Output
 
+    fun canBuildAt(coords: WorldCoords): Boolean = true
+
 }

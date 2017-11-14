@@ -3,6 +3,7 @@ package io.github.plenglin.questofcon.game.grid
 import io.github.plenglin.questofcon.game.GameData
 import io.github.plenglin.questofcon.game.Team
 import io.github.plenglin.questofcon.game.building.Building
+import io.github.plenglin.questofcon.game.building.BuildingType
 import io.github.plenglin.questofcon.game.building.Improvement
 import io.github.plenglin.questofcon.game.pawn.Pawn
 import io.github.plenglin.questofcon.net.DataTile
@@ -20,11 +21,6 @@ class Tile {
 
     fun getTeam(): Team? {
         return pawn?.team ?: building?.team
-    }
-
-    fun passableBy(team: Team): Boolean {
-        val tileTeam = getTeam()
-        return biome.passable && (tileTeam == null || tileTeam == team)
     }
 
     fun canBuildOn(team: Team): Boolean {
@@ -45,6 +41,45 @@ class Tile {
             output = true
         }
         return output
+    }
+
+    fun cost(): Int {
+        if (improvement == Improvement.ROAD) {
+            return 1
+        }
+        return biome.movementCost
+    }
+
+    private fun passableByAquatic(): Boolean {
+        return biome.aquatic || improvement == Improvement.CANAL
+    }
+
+    private fun passableByTerrestrial(): Boolean {
+        return !biome.aquatic || improvement == Improvement.BRIDGE
+    }
+
+    fun passableBy(pawn: Pawn): Boolean {
+        val team = getTeam()
+        if ((team != null && team != pawn.team) || !biome.passable) {
+            return false
+        }
+        return (passableByAquatic() && pawn.type.aquatic) || (passableByTerrestrial() && pawn.type.terrestrial)
+    }
+
+    private fun buildableByAquatic(): Boolean {
+        return biome.aquatic
+    }
+
+    private fun buildableByTerrestrial(): Boolean {
+        return !biome.aquatic
+    }
+
+    fun canBuild(building: BuildingType, team: Team): Boolean {
+        val thisTeam = getTeam()
+        if ((thisTeam != null && thisTeam != team) || !biome.buildable) {
+            return false
+        }
+        return (buildableByAquatic() && building.aquatic) || (buildableByTerrestrial() && building.terrestrial)
     }
 
     fun serialized(): DataTile {

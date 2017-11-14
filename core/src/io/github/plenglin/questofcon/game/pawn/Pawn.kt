@@ -53,7 +53,7 @@ class Pawn(val type: PawnType, var team: Team, _pos: WorldCoords, var level: Int
     fun getMovableSquares(): Map<WorldCoords, Int> {
         // Dijkstra
         val dist = mutableMapOf<WorldCoords, Int>(pos to 0)  // coord, cost
-        val unvisited = pos.surrounding().filter { it.tile!!.passableBy(team) }.toMutableList()
+        val unvisited = pos.surrounding().filter { it.tile!!.passableBy(this) }.toMutableList()
         unvisited.forEach {
             dist[it] = it.tile!!.biome.movementCost + maxOf(it.tile.elevation - pos.tile!!.elevation, 1)
         }
@@ -66,11 +66,11 @@ class Pawn(val type: PawnType, var team: Team, _pos: WorldCoords, var level: Int
             //println("$terrain, ${cost}, ${tile.passableBy(team)}")
             val fullDist = dist[coord]!!
 
-            if (tile.passableBy(team) && fullDist + cost <= ap) {  // Can we even get past this tile?
+            if (tile.passableBy(this) && fullDist + cost <= ap) {  // Can we even get past this tile?
                 coord.surrounding().forEach { neighbor ->  // For each neighbor...
                     val totalCost = fullDist + cost + maxOf(neighbor.tile!!.elevation - tile.elevation, 1)
                     val neighborDist = dist[neighbor]
-                    val passable = neighbor.tile.passableBy(team)
+                    val passable = neighbor.tile.passableBy(this)
                     //println("neigh: ${neighbor.tile.biome}, ${tile.building}, ${tile.passableBy(team)}")
                     if (passable) {
                         if (neighborDist == null) {  // If we haven't added the neighbor, add it now

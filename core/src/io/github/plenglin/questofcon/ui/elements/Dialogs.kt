@@ -7,6 +7,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Skin
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener
 import io.github.plenglin.questofcon.game.Team
+import io.github.plenglin.questofcon.game.building.BuildingType
 import io.github.plenglin.questofcon.game.grid.WorldCoords
 import io.github.plenglin.questofcon.game.pawn.PawnType
 import io.github.plenglin.questofcon.ui.UI
@@ -62,12 +63,11 @@ class UnitSpawningDialog(val units: List<PawnType>, skin: Skin, val worldCoords:
 
 }
 
-class BuildingSpawningDialog(skin: Skin, val worldCoords: WorldCoords) : Dialog("Spawn", skin) {
+class BuildingSpawningDialog(buildings: List<BuildingType>, skin: Skin, val worldCoords: WorldCoords) : Dialog("Spawn", skin) {
 
     val team = UI.targetPlayerInterface.thisTeam
 
     init {
-        val buildings = team.getBuildable()
         contentTable.apply {
             add(Label("Type", skin))
             add(Label("Cost", skin))

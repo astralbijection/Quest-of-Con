@@ -21,6 +21,9 @@ class BuildingType(_name: String) : Registerable, BuildableType<Building> {
 
     var maxHp = 1
 
+    var aquatic = false
+    var terrestrial = true
+
     var cost = 0
     var upkeep = 0
 

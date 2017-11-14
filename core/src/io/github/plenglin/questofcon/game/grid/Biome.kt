@@ -5,7 +5,15 @@ import io.github.plenglin.questofcon.Assets
 import io.github.plenglin.util.Registerable
 
 
-data class Biome(override val name: String, val displayName: String, val passable: Boolean, val buildable: Boolean, val texture: () -> Texture = Assets.missingno, val movementCost: Int = 1) : Registerable {
+data class Biome(
+        override val name: String,
+        val displayName: String,
+        val passable: Boolean,
+        val buildable: Boolean,
+        val texture: () -> Texture = Assets.missingno,
+        val movementCost: Int = 1,
+        val aquatic: Boolean = false,
+        val improvable: Boolean = true) : Registerable {
     override var id: Long = -1L
 
     override fun toString(): String {
