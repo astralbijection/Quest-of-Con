@@ -3,8 +3,6 @@ package io.github.plenglin.questofcon
 import com.badlogic.gdx.assets.AssetDescriptor
 import com.badlogic.gdx.assets.AssetManager
 import com.badlogic.gdx.graphics.Texture
-import ktx.assets.getAsset
-import ktx.assets.load
 
 
 object Assets {
@@ -23,6 +21,7 @@ object Assets {
     val tankdestroyer = AssetDescriptor<Texture>("sprites/pawn/tankdestr.png", Texture::class.java)
     val beammech = AssetDescriptor<Texture>("sprites/pawn/beammech.png", Texture::class.java)
     val destroyer = AssetDescriptor<Texture>("sprites/pawn/destroyer.png", Texture::class.java)
+    val engineer = AssetDescriptor<Texture>("sprites/pawn/engineer.png", Texture::class.java)
 
     val headquarters = AssetDescriptor<Texture>("sprites/building/headquarters.png", Texture::class.java)
     val factory = AssetDescriptor<Texture>("sprites/building/factory.png", Texture::class.java)
@@ -36,6 +35,10 @@ object Assets {
     val smallhill = AssetDescriptor<Texture>("sprites/terrain/smallhill-bg.png", Texture::class.java)
     val water = AssetDescriptor<Texture>("sprites/terrain/water.png", Texture::class.java)
 
+    val bridge = AssetDescriptor<Texture>("sprites/improvement/bridge.png", Texture::class.java)
+    val road = AssetDescriptor<Texture>("sprites/improvement/road.png", Texture::class.java)
+    val canal = AssetDescriptor<Texture>("sprites/improvement/canal.png", Texture::class.java)
+
     val missingno = { this[missing] }
 
     fun load() {
@@ -48,6 +51,7 @@ object Assets {
         manager.load(tankdestroyer)
         manager.load(beammech)
         manager.load(destroyer)
+        manager.load(engineer)
 
         manager.load(missing)
         manager.load(q)
@@ -63,6 +67,10 @@ object Assets {
         manager.load(sand)
         manager.load(smallhill)
         manager.load(water)
+
+        manager.load(bridge)
+        manager.load(road)
+        manager.load(canal)
     }
 
     operator fun <T> get(descriptor: AssetDescriptor<T>): T {

@@ -54,7 +54,23 @@ class WorldRenderer(val world: World) {
 
             batch.end()
 
+            batch.begin()
+            // Draw the improvements
+            grid.forEachIndexed { i, col ->
+                val x = i.toFloat()
+                col.forEachIndexed { j, tile ->
+                    val y = j.toFloat()
+                    val imp = tile.improvement
+                    if (imp != null) {
+                        batch.draw(imp.texture(WorldCoords(world, i, j)), x, y, 1f, 1f)
+                    }
+                }
+            }
+            batch.end()
+
             // Draw the grid if necessary
+            Gdx.gl.glEnable(GL20.GL_BLEND)
+            Gdx.gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA)
             shape.begin(ShapeRenderer.ShapeType.Filled)
             if (drawGrid) {
                 shape.color = Color(0f, 0.5f, 1f, 0.5f)
@@ -71,12 +87,8 @@ class WorldRenderer(val world: World) {
                     shape.line(0f, y, width.toFloat(), y)
                 }
             }
-            shape.end()
 
             // Draw in the selection sets
-            Gdx.gl.glEnable(GL20.GL_BLEND)
-            Gdx.gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA)
-            shape.begin()
             paints.forEach { it.draw(shape) }
             shape.end()
             Gdx.gl.glDisable(GL20.GL_BLEND)

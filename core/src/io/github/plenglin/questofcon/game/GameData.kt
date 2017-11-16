@@ -3,6 +3,7 @@ package io.github.plenglin.questofcon.game
 import io.github.plenglin.questofcon.Assets
 import io.github.plenglin.questofcon.Constants
 import io.github.plenglin.questofcon.game.building.BuildingType
+import io.github.plenglin.questofcon.game.building.Improvement
 import io.github.plenglin.questofcon.game.grid.Biome
 import io.github.plenglin.questofcon.game.pawn.PawnClass
 import io.github.plenglin.questofcon.game.pawn.PawnType
@@ -88,6 +89,19 @@ object GameData {
         texture = { Assets[Assets.artillery] }
     }
 
+    val engineer = PawnType("veh-engineer").apply {
+        displayName = "engineer"
+        cost = 100
+        baseAtk = 0
+        baseHp = 10
+        maxAp = 5
+        type = PawnClass.VEHICLE
+        texture = { Assets[Assets.engineer] }
+        aquatic = true
+        terrestrial = true
+        canBuild = listOf(Improvement.BRIDGE, Improvement.CANAL, Improvement.ROAD, Improvement.MINEFIELD)
+    }
+
     val destroyer = PawnType("ship-destroyer").apply {
         displayName = "destroyer"
         cost = 300
@@ -165,6 +179,7 @@ object GameData {
         pawns.register(scout)
         pawns.register(artillery)
         pawns.register(destroyer)
+        pawns.register(engineer)
 
         buildings.register(hq)
         buildings.register(factory)
