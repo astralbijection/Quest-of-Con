@@ -17,16 +17,21 @@ enum class Improvement(
         val aquatic: Boolean = false,
         val terrestrial: Boolean = true,
         val buildable: Boolean = true,
+        override var cost: Int = 0,
         val texture: (WorldCoords) -> Texture = { Assets[Assets.missing] }) : BuildableType<Tile>, Serializable {
 
     FOREST(buildable = false), JUNGLE(buildable = false),
 
-    ROAD(false, true, texture = { Assets[Assets.road] }),
-    CANAL(false, true, texture = { Assets[Assets.canal] }),
-    BRIDGE(true, false, texture = { Assets[Assets.bridge] }),
+    ROAD(false, true, cost = 35, texture = { Assets[Assets.road] }),
+    CANAL(false, true, cost = 50, texture = { Assets[Assets.canal] }),
+    BRIDGE(true, false, cost = 50, texture = { Assets[Assets.bridge] }),
     MINEFIELD(true, true);
 
+    override val displayName: String
+        get() = name.toLowerCase()
+
     override fun buildAt(coords: WorldCoords, team: Team): Tile {
-        return coords.tile!!
+        return coords.tile!!.apply { improvement = this@Improvement }
     }
+
 }

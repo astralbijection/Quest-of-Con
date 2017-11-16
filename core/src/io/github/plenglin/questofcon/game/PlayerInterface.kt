@@ -33,6 +33,8 @@ abstract class PlayerInterface {
     abstract fun demolishBuilding(id: Long, onResult: (Boolean) -> Unit = {})
     abstract fun sendEndTurn(onResult: (Team) -> Unit = {})
 
+    abstract fun <T> build(at: WorldCoords, type: BuildableType<T>, onResult: (T?) -> Unit = {})
+
     abstract fun sendChat(text: String, onResult: (Boolean) -> Unit = {})
 
     // Data

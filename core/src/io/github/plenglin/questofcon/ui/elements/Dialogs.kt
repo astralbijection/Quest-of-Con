@@ -6,6 +6,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Label
 import com.badlogic.gdx.scenes.scene2d.ui.Skin
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener
+import io.github.plenglin.questofcon.game.BuildableType
 import io.github.plenglin.questofcon.game.Team
 import io.github.plenglin.questofcon.game.building.BuildingType
 import io.github.plenglin.questofcon.game.grid.WorldCoords
@@ -83,6 +84,39 @@ class BuildingSpawningDialog(buildings: List<BuildingType>, skin: Skin, val worl
                             UI.targetPlayerInterface.makeBuilding(worldCoords, bldg, {})
                             UI.updateData()
                             this@BuildingSpawningDialog.hide()
+                        }
+                    })
+                })
+                row()
+            }
+        }
+        button("Cancel")
+        pack()
+        setPosition((UI.viewport.screenWidth / 2).toFloat(), (UI.viewport.screenHeight / 2).toFloat())
+    }
+
+}
+
+class BuildableSpawningDialog(buildables: List<BuildableType<Any>>, skin: Skin, val worldCoords: WorldCoords) : Dialog("Spawn", skin) {
+
+    val team = UI.targetPlayerInterface.thisTeam
+
+    init {
+        contentTable.apply {
+            add(Label("Type", skin))
+            add(Label("Cost", skin))
+            row()
+            buildables.forEach { bldg ->
+                add(Label(bldg.displayName, skin))
+                add(Label("$${bldg.cost}", skin))
+                add(TextButton("Build", skin).apply {
+                    isDisabled = bldg.cost > team.money
+
+                    addListener(object : ChangeListener() {
+                        override fun changed(event: ChangeEvent?, actor: Actor?) {
+                            UI.targetPlayerInterface.build(worldCoords, bldg, {})
+                            UI.updateData()
+                            this@BuildableSpawningDialog.hide()
                         }
                     })
                 })

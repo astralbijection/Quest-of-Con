@@ -1,5 +1,6 @@
 package io.github.plenglin.questofcon.interop
 
+import io.github.plenglin.questofcon.game.BuildableType
 import io.github.plenglin.questofcon.game.GameState
 import io.github.plenglin.questofcon.game.PlayerInterface
 import io.github.plenglin.questofcon.game.Team
@@ -28,6 +29,10 @@ class PassAndPlayManager(val state: GameState) {
 }
 
 class PassAndPlayInterface(override val thisTeamId: Long, val parent: PassAndPlayManager) : PlayerInterface() {
+
+    override fun <T> build(at: WorldCoords, type: BuildableType<T>, onResult: (T?) -> Unit) {
+        onResult(type.buildAt(at, thisTeam))
+    }
 
     val gameState: GameState = parent.state
     override val world: World = gameState.world

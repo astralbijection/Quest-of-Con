@@ -17,14 +17,14 @@ class BuildingType(_name: String) : Registerable, BuildableType<Building> {
     override var id: Long = -1
     override val name: String = _name
 
-    var displayName = ""
+    override var displayName = ""
+    override var cost = 0
 
     var maxHp = 1
 
     var aquatic = false
     var terrestrial = true
 
-    var cost = 0
     var upkeep = 0
 
     var powerConsumption = 0

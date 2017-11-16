@@ -1,6 +1,7 @@
 package io.github.plenglin.questofcon.interop
 
 import com.badlogic.gdx.graphics.Color
+import io.github.plenglin.questofcon.game.BuildableType
 import io.github.plenglin.questofcon.game.GameData
 import io.github.plenglin.questofcon.game.PlayerInterface
 import io.github.plenglin.questofcon.game.Team
@@ -14,6 +15,9 @@ import io.github.plenglin.questofcon.net.*
 
 
 class NetworkedPlayerInterface(val client: Client) : PlayerInterface() {
+    override fun <T> build(at: WorldCoords, type: BuildableType<T>, onResult: (T?) -> Unit) {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
 
     override val world: World
     override val teams: MutableMap<Long, Team>

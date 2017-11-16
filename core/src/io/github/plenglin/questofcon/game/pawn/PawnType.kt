@@ -17,7 +17,7 @@ class PawnType(_name: String) : Registerable, BuildableType<Pawn> {
     override var id: Long = 0L
     override val name: String = _name
 
-    var displayName = ""
+    override var displayName = ""
 
     var type = PawnClass.INFANTRY
 
@@ -30,7 +30,7 @@ class PawnType(_name: String) : Registerable, BuildableType<Pawn> {
     var maxAtks = 1
     var maxAp = 3
 
-    var cost = 0
+    override var cost = 0
     var upkeep = 0
 
     var baseAtk = 0

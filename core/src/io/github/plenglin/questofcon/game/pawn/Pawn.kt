@@ -7,6 +7,7 @@ import io.github.plenglin.questofcon.game.grid.WorldCoords
 import io.github.plenglin.questofcon.net.DataPawn
 import io.github.plenglin.questofcon.ui.PawnActionManager
 import io.github.plenglin.questofcon.ui.UI
+import io.github.plenglin.questofcon.ui.elements.BuildableSpawningDialog
 import io.github.plenglin.questofcon.ui.elements.ConfirmationDialog
 import io.github.plenglin.questofcon.ui.elements.RadialMenuItem
 
@@ -173,6 +174,12 @@ class Pawn(val type: PawnType, var team: Team, _pos: WorldCoords, var level: Int
 
             }
 
+        }
+
+        if (type.canBuild.isNotEmpty()) {
+            actions.add(RadialMenuItem("Build with $displayName", {
+                BuildableSpawningDialog(type.canBuild, UI.skin, pos).show(UI.stage)
+            }))
         }
         return actions
     }
