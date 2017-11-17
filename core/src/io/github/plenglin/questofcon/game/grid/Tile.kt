@@ -66,20 +66,12 @@ class Tile {
         return (passableByAquatic() && pawn.type.aquatic) || (passableByTerrestrial() && pawn.type.terrestrial)
     }
 
-    private fun buildableByAquatic(): Boolean {
+    fun buildableByAquatic(): Boolean {
         return biome.aquatic
     }
 
-    private fun buildableByTerrestrial(): Boolean {
+    fun buildableByTerrestrial(): Boolean {
         return !biome.aquatic
-    }
-
-    fun canBuild(building: BuildingType, team: Team): Boolean {
-        val thisTeam = getTeam()
-        if ((thisTeam != null && thisTeam != team) || !biome.buildable) {
-            return false
-        }
-        return (buildableByAquatic() && building.aquatic) || (buildableByTerrestrial() && building.terrestrial)
     }
 
     fun serialized(): DataTile {

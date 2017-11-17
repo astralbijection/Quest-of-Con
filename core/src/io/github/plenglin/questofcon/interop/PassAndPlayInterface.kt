@@ -31,6 +31,7 @@ class PassAndPlayManager(val state: GameState) {
 class PassAndPlayInterface(override val thisTeamId: Long, val parent: PassAndPlayManager) : PlayerInterface() {
 
     override fun <T> build(at: WorldCoords, type: BuildableType<T>, onResult: (T?) -> Unit) {
+        thisTeam.money -= type.cost
         onResult(type.buildAt(at, thisTeam))
     }
 

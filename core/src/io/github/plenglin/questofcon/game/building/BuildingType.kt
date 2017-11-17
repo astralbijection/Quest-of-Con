@@ -9,10 +9,19 @@ import io.github.plenglin.questofcon.game.pawn.PawnType
 import io.github.plenglin.util.Registerable
 
 class BuildingType(_name: String) : Registerable, BuildableType<Building> {
+
     override fun buildAt(coords: WorldCoords, team: Team): Building {
         val building = Building(this, team, coords).applyToPosition()
         return building
     }
+
+    override fun canBuildAt(coords: WorldCoords, team: Team): Boolean {
+        val tile = coords.tile!!
+        val thisTeam = tile.getTeam()
+        if ((thisTeam != null && thisTeam != team) || !tile.biome.buildable) {
+            return false
+        }
+        return (tile.buildableByAquatic() && aquatic) || (tile.buildableByTerrestrial() && terrestrial)    }
 
     override var id: Long = -1
     override val name: String = _name

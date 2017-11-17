@@ -178,19 +178,15 @@ class Pawn(val type: PawnType, var team: Team, _pos: WorldCoords, var level: Int
 
         if (type.canBuild.isNotEmpty()) {
             actions.add(RadialMenuItem("Build with $displayName", {
-                BuildableSpawningDialog(type.canBuild, UI.skin, pos).show(UI.stage)
+                BuildableSpawningDialog(type.canBuild.filter { it.canBuildAt(pos, team) }, UI.skin, pos).show(UI.stage)
             }))
         }
         return actions
     }
 
-    fun serialized(): DataPawn {
-        return DataPawn(id, team.id, type.id, health, ap, attacksRemaining, pos.serialized())
-    }
+    fun serialized(): DataPawn = DataPawn(id, team.id, type.id, health, ap, attacksRemaining, pos.serialized())
 
-    override fun toString(): String {
-        return "Pawn($id, ${javaClass.simpleName})"
-    }
+    override fun toString(): String = "Pawn($id@${type.name})"
 
     val texture get() = type.texture()
 

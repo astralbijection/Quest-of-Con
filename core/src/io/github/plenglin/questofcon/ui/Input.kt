@@ -251,7 +251,7 @@ object RadialMenuInputManager : KtxInputAdapter {
             }
 
             // Construction actions
-            val buildings = currentTeam.getBuildable().filter { selection.tile.canBuild(it, currentTeam) }
+            val buildings = currentTeam.getBuildable().filter { it.canBuildAt(selectedCoord, currentTeam) }
             if (buildings.isNotEmpty()) {
                 actions.add(RadialMenuItem("Build", {
                     BuildingSpawningDialog(buildings, UI.skin, it).show(UI.stage)

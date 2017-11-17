@@ -18,13 +18,20 @@ enum class Improvement(
         val terrestrial: Boolean = true,
         val buildable: Boolean = true,
         override var cost: Int = 0,
-        val texture: (WorldCoords) -> Texture = { Assets[Assets.missing] }) : BuildableType<Tile>, Serializable {
+        val texture: (WorldCoords) -> Texture = { Assets[Assets.missing] },
+        val canBuildPredicate: (WorldCoords, Team) -> Boolean = { _, _ -> true }) : BuildableType<Tile>, Serializable {
 
     FOREST(buildable = false), JUNGLE(buildable = false),
 
-    ROAD(false, true, cost = 35, texture = { Assets[Assets.road] }),
-    CANAL(false, true, cost = 50, texture = { Assets[Assets.canal] }),
-    BRIDGE(true, false, cost = 50, texture = { Assets[Assets.bridge] }),
+    ROAD(false, true, cost = 35, texture = { Assets[Assets.road] }, canBuildPredicate = { c, _ ->
+        c.tile!!.buildableByTerrestrial()
+    }),
+    CANAL(false, true, cost = 50, texture = { Assets[Assets.canal] }, canBuildPredicate = { c, _ ->
+        c.tile!!.buildableByTerrestrial()
+    }),
+    BRIDGE(true, false, cost = 50, texture = { Assets[Assets.bridge] }, canBuildPredicate = { c, _ ->
+        c.tile!!.buildableByAquatic()
+    }),
     MINEFIELD(true, true);
 
     override val displayName: String
@@ -32,6 +39,10 @@ enum class Improvement(
 
     override fun buildAt(coords: WorldCoords, team: Team): Tile {
         return coords.tile!!.apply { improvement = this@Improvement }
+    }
+
+    override fun canBuildAt(coords: WorldCoords, team: Team): Boolean {
+        return coords.tile!!.getTeam() == team && canBuildPredicate(coords, team)
     }
 
 }
