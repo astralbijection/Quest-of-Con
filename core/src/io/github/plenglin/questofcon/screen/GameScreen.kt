@@ -37,7 +37,7 @@ object GameScreen : KtxScreen {
         batch = SpriteBatch()
         gameState = GameState(listOf(teamA, teamB, teamC))
         ifMan = PassAndPlayManager(gameState)
-        gameState.turnChange.addListener { newTeam ->
+        gameState.turnChange.addListener { _ ->
             UI.targetPlayerInterface = ifMan.currentInterface()
             UI.updateData()
         }

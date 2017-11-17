@@ -60,7 +60,7 @@ class GameRoom(val sockets: List<Socket>, val roomId: Long) : Thread("GameRoom-$
             broadcastEvent(ServerEventTypes.BUILDING_CHANGE, it.serialized())
         }
         gameState.worldChange.addListener {
-            broadcastEvent(ServerEventTypes.TERRAIN_CHANGE, gameState.world.serialized())
+            broadcastEvent(ServerEventTypes.TERRAIN_CHANGE, Pair(it.serialized(), it.tile!!.serialized()))
         }
 
         logger.info("generating world")

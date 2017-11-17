@@ -8,7 +8,7 @@ import io.github.plenglin.questofcon.net.DataWorldState
 class World(val width: Int, val height: Int) : Sequence<WorldCoords> {
     override fun iterator(): Iterator<WorldCoords> {
         return grid.mapIndexed { i, arr ->
-            arr.mapIndexed { j, tile ->
+            arr.mapIndexed { j, _ ->
                 WorldCoords(this@World, i, j)
             }
         }.flatten().iterator()

@@ -22,8 +22,8 @@ class PassAndPlayManager(val state: GameState) {
         state.buildingChange.addListener { b ->
             interfaces.forEach { it.buildingUpdate.fire(b) }
         }
-        state.worldChange.addListener { p ->
-            interfaces.forEach { it.worldUpdate.fire(Unit) }
+        state.worldChange.addListener { c ->
+            interfaces.forEach { it.worldUpdate.fire(c) }
         }
     }
 }
@@ -31,8 +31,15 @@ class PassAndPlayManager(val state: GameState) {
 class PassAndPlayInterface(override val thisTeamId: Long, val parent: PassAndPlayManager) : PlayerInterface() {
 
     override fun <T> build(at: WorldCoords, type: BuildableType<T>, onResult: (T?) -> Unit) {
-        thisTeam.money -= type.cost
-        onResult(type.buildAt(at, thisTeam))
+        if (thisTeam.money > type.cost) {
+            onResult(null)
+        } else {
+            thisTeam.money -= type.cost
+            type.buildAt(at, thisTeam).let {
+                onResult(it)
+                gameState.onSomethingBuilt.fire(it as Any)
+            }
+        }
     }
 
     val gameState: GameState = parent.state

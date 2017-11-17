@@ -20,7 +20,7 @@ abstract class PlayerInterface {
     val turnChange: ListenerManager<Team> = ListenerManager()
     val pawnUpdate: ListenerManager<Pawn> = ListenerManager()
     val buildingUpdate: ListenerManager<Building> = ListenerManager()
-    val worldUpdate: ListenerManager<Unit> = ListenerManager()
+    val worldUpdate: ListenerManager<WorldCoords> = ListenerManager()
     val chatUpdate: ListenerManager<DataChat> = ListenerManager()
 
     // Actions

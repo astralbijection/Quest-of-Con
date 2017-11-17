@@ -1,5 +1,6 @@
 package io.github.plenglin.questofcon.net
 
+import io.github.plenglin.questofcon.game.building.Improvement
 import java.io.Serializable
 import java.util.*
 
@@ -61,7 +62,7 @@ data class DataWorldState(val grid: Array<Array<DataTile>>) : Serializable {
         out
     }
 }
-data class DataTile(val biome: Long, val elevation: Int) : Serializable
+data class DataTile(val biome: Long, val elevation: Int, val improvement: Improvement? = null) : Serializable
 
 data class DataPosition(val i: Int, val j: Int) : Serializable
 data class DataTeam(val name: String, val id: Long, val color: Int) : Serializable

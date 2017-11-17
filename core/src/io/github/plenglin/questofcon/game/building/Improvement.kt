@@ -19,7 +19,7 @@ enum class Improvement(
         val buildable: Boolean = true,
         override var cost: Int = 0,
         val texture: (WorldCoords) -> Texture = { Assets[Assets.missing] },
-        val canBuildPredicate: (WorldCoords, Team) -> Boolean = { _, _ -> true }) : BuildableType<Tile>, Serializable {
+        val canBuildPredicate: (WorldCoords, Team) -> Boolean = { _, _ -> true }) : BuildableType<WorldCoords>, Serializable {
 
     FOREST(buildable = false), JUNGLE(buildable = false),
 
@@ -37,8 +37,9 @@ enum class Improvement(
     override val displayName: String
         get() = name.toLowerCase()
 
-    override fun buildAt(coords: WorldCoords, team: Team): Tile {
-        return coords.tile!!.apply { improvement = this@Improvement }
+    override fun buildAt(coords: WorldCoords, team: Team): WorldCoords {
+        coords.tile!!.let { it.improvement = this }
+        return coords
     }
 
     override fun canBuildAt(coords: WorldCoords, team: Team): Boolean {
