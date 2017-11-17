@@ -24,7 +24,9 @@ object PawnActionManager {
         if (pawn != this.pawn || state != PawnActionState.MOVE) {
             cleanAction()
             this.pawn = pawn
-            movementSquares = pawn.getMovableSquares()
+            movementSquares = pawn.getMovableSquares().filterNot {
+                UI.targetPlayerInterface.getAllPawns().map { it.pos }.contains(it.key)
+            }
             primaryShadeSet = ShadeSet(
                     movementSquares.keys,
                     mode = ShadeSet.SHADE,
