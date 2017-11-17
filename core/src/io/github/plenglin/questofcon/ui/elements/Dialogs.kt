@@ -114,6 +114,7 @@ class BuildableSpawningDialog(buildables: List<BuildableType<Any>>, skin: Skin, 
 
                     addListener(object : ChangeListener() {
                         override fun changed(event: ChangeEvent?, actor: Actor?) {
+                            println("building a ${bldg.displayName}")
                             UI.targetPlayerInterface.build(worldCoords, bldg, {})
                             UI.updateData()
                             this@BuildableSpawningDialog.hide()
