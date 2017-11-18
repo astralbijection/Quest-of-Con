@@ -58,17 +58,15 @@ class Pawn(val type: PawnType, var team: Team, _pos: WorldCoords, var level: Int
 
         while (unvisited.isNotEmpty()) {
             val coord = unvisited.removeAt(0)  // Pop this new coordinate
-            val tile = coord.tile!!
+            val firstTile = coord.tile!!
 
             val coordDist = dist[coord]!!
 
-            if (tile.passableBy(this) && ap - coordDist > 0) {  // Can we even get past this tile? Do we have the AP to leave it?
+            if (firstTile.passableBy(this) && ap - coordDist > 0) {  // Can we even get past this tile? Do we have the AP to leave it?
                 coord.surrounding().forEach { neighbor ->  // If we can, then calculate distances to neighbors
                     val neighborDist = dist[neighbor]
-                    val neighborElevationCost = if (neighbor.tile!!.biome.aquatic) 0 else maxOf(neighbor.tile.elevation - tile.elevation, 0)
-                    val neighborBiomeCost = neighbor.tile.biome.movementCost
-                    val newCost = coordDist + neighborBiomeCost + neighborElevationCost
-                    if (neighbor.tile.passableBy(this)) {
+                    val newCost = coordDist + pos.costToMoveTo(neighbor)
+                    if (neighbor.tile!!.passableBy(this)) {
                         if (neighborDist == null) {  // If we haven't added the neighbor, add it now
                             unvisited.add(neighbor)
                             dist[neighbor] = newCost

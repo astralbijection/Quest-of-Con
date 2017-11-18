@@ -45,6 +45,13 @@ data class WorldCoords(val world: World, val i: Int, val j: Int) {
         ).filter { includeNonexistent || it.exists }
     }
 
+    fun costToMoveTo(to: WorldCoords): Int {
+        val elevation =
+                if (to.tile!!.biome.aquatic || to.tile.speedImproved()) 0
+                else maxOf(to.tile.elevation - tile!!.elevation, 0)
+        return elevation + to.tile.cost()
+    }
+
     fun serialized(): DataPosition = DataPosition(i, j)
 
     fun manhattanDist(other: WorldCoords): Int {

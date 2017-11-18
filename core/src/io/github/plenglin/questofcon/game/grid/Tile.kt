@@ -44,10 +44,14 @@ class Tile {
     }
 
     fun cost(): Int {
-        if (improvement == Improvement.ROAD) {
+        if (speedImproved()) {
             return 1
         }
         return biome.movementCost
+    }
+
+    fun speedImproved(): Boolean {improvement == Improvement.ROAD || improvement == Improvement.CANAL || improvement == Improvement.BRIDGE
+        return improvement == Improvement.ROAD || improvement == Improvement.CANAL || improvement == Improvement.BRIDGE
     }
 
     private fun passableByAquatic(): Boolean {

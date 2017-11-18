@@ -111,7 +111,8 @@ class MapToHeight(val world: World, val grid: HeightMap) {
             // Interpolate the values at the sides
             val h = grid[it.i.toDouble() / world.width, it.j.toDouble() / world.height]
             val tile = it.tile!!
-            tile.elevation = (logit(h, 0.2) * Constants.ELEVATION_LEVELS).toInt()
+            //tile.elevation = (logit(h, 0.2) * Constants.ELEVATION_LEVELS).toInt()
+            tile.elevation = (h * Constants.ELEVATION_LEVELS).toInt()
         }
     }
 }
@@ -140,7 +141,7 @@ class BiomeGenerator(val world: World, val height: HeightMap, val rainfall: Heig
                 when {
                     tile.elevation == Constants.ELEVATION_LEVELS - 1 -> GameData.mountains
                     h > 0.7 -> GameData.highlands
-                    h > 0.25 -> if (water > 0.5) GameData.grass else GameData.desert
+                    h > 0.25 -> if (water > 0.2) GameData.grass else GameData.desert
                     else -> GameData.water
                 }
             }()

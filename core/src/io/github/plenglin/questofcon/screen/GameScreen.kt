@@ -45,8 +45,8 @@ object GameScreen : KtxScreen {
         println("Generating terrain...")
 
         println("Generating height data...")
-        val heightData = HeightMap(DiamondSquareHeightGenerator(3, initialOffsets = 2.0, iterativeRescale = 0.8).generate().grid).normalized
-        val rainfallData = HeightMap(DiamondSquareHeightGenerator(3, initialOffsets = 2.0, iterativeRescale = 0.8).generate().grid).normalized
+        val heightData = HeightMap(DiamondSquareHeightGenerator(3, initialOffsets = 2.0, iterativeRescale = 0.8, seed = 1516).generate().grid).normalized
+        val rainfallData = HeightMap(DiamondSquareHeightGenerator(3, initialOffsets = 2.0, iterativeRescale = 0.8, seed = 1617).generate().grid).normalized
 
         heightData.grid.forEach { col ->
             col.forEach {
